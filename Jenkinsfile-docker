@@ -15,6 +15,8 @@ pipeline {
 		success {
                     echo 'Now Archiving...'
                     archiveArtifacts artifacts: '**/target/*.war'
+                    sh 'docker build . -t tomcatwebapp:latest'
+                    sh 'docker run -d --name webapp-stage -p 8090:8080 --rm tomcatwebapp:latest'
                 }
 
             }
@@ -31,6 +33,7 @@ pipeline {
                 timeout(time:5, unit:'DAYS'){
                     input message:'Approve PRODUCTION Deployment?'
                 }
+                sh 'docker run -d --name webapp-prod -p 8091:8080 --rm tomcatwebapp:latest'
                 build job: 'Deploy-to-Prod'
             }
             post {
