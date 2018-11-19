@@ -15,8 +15,9 @@ pipeline {
 		success {
                     echo 'Now Archiving...'
                     archiveArtifacts artifacts: '**/target/*.war'
-                    sh 'docker build . -t tomcatwebapp:${env.BUILD_ID}'
-                    sh 'docker run -d -p 8090:8090 tomcatwebapp:${env.BUILD_ID}'
+                    sh '[ `docker images | grep tomcatwebapp`-eq 0 ] && docker rmi -f tomcatwebapp:latest'
+                    sh 'docker build . -t tomcatwebapp:latest'
+                    sh 'docker run -d -p 8090:8090 tomcatwebapp:latest'
                 }
 
             }
@@ -33,7 +34,7 @@ pipeline {
                 timeout(time:5, unit:'DAYS'){
                     input message:'Approve PRODUCTION Deployment?'
                 }
-                sh 'docker run -d -p 8091:8090 tomcatwebapp:${env.BUILD_ID}'
+                sh 'docker run -d -p 8091:8090 tomcatwebapp:latest'
                 build job: 'Deploy-to-Prod'
             }
             post {
