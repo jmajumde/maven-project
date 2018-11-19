@@ -15,7 +15,7 @@ pipeline {
 		success {
                     echo 'Now Archiving...'
                     archiveArtifacts artifacts: '**/target/*.war'
-                    sh 'docker images | grep tomcatwebapp; [ $? -eq 0 ] && docker rmi -f tomcatwebapp:latest'
+                    sh '"docker images | grep tomcatwebapp"; [ $? -eq 0 ] && docker rmi -f tomcatwebapp:latest'
                     sh 'docker build . -t tomcatwebapp:latest'
                     sh 'docker run -d -p 8090:8090 tomcatwebapp:latest'
                 }
